@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kenduit</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FFF3F7;--surface:#fff;--ink:#3A1226;--mute:#85596D;--line:#F5D5E2;--blue:#D6336C;--out:#B42318;--ok:#1E8A5A;--chip:#FCE4EE;
@@ -66,10 +67,28 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
 .hero>.bg{position:absolute;z-index:0}
 .hero>.loc{position:absolute}
 .loc{position:absolute;top:20px;right:18px;max-width:52%;font-size:12px;font-weight:600;background:rgba(255,255,255,.2);padding:4px 10px;border-radius:99px;text-align:right}
+[hidden]{display:none!important}
+.who{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--mute);margin-bottom:10px}
+.who div{display:flex;gap:8px;flex:none}
+.msg{font-size:13px;margin:10px 0 0;color:var(--out)}
+.msg.ok{color:var(--ok)}
+.lead{font-size:14px;color:var(--mute);margin:0 0 4px}
 </style>
 </head>
 <body>
-<main>
+<main id="authBox" hidden>
+  <section style="margin-top:40px">
+    <h2 style="font-size:22px">Kenduit</h2>
+    <p class="lead">Catatan disimpan online dalam satu "buku" tanpa login. Buat buku baru, lalu bagikan link-nya ke perangkat lain atau orang lain. Siapa pun yang punya link bisa melihat dan mengubah catatan di buku itu.</p>
+    <button class="primary" id="btnNew" type="button">Buat buku baru</button>
+    <label for="codeIn">Sudah punya buku? Tempel link atau kode</label>
+    <input id="codeIn" type="text" autocomplete="off" placeholder="https://...#kode atau kode saja">
+    <button class="ghost" id="btnOpen" type="button" style="width:100%;margin-top:10px">Buka buku</button>
+    <p class="msg" id="authMsg" role="status"></p>
+  </section>
+</main>
+<main id="appMain">
+  <div class="who" id="whoBar" hidden><span>Buku bersama aktif, sinkron antar perangkat</span><div><button class="ghost" id="btnCopy" type="button">Salin link</button><button class="ghost" id="btnOut" type="button">Tutup</button></div></div>
   <div class="hero">
 <div class="bg" id="bg" aria-hidden="true">
   <div class="slide on" data-name="Candi Borobudur, Jawa Tengah"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b1f5c"/><stop offset=".55" stop-color="#d6336c"/><stop offset="1" stop-color="#ffb36b"/></linearGradient></defs><rect width="800" height="600" fill="url(#a1)"/><circle cx="400" cy="340" r="75" fill="#ffe9a8" opacity=".9"/><path d="M0 430Q200 370 400 410T800 390V600H0Z" fill="#6a2f5a"/><g fill="#3a1d3a"><rect x="190" y="480" width="420" height="30"/><rect x="235" y="450" width="330" height="30"/><rect x="280" y="420" width="240" height="30"/><rect x="325" y="390" width="150" height="30"/><rect x="365" y="360" width="70" height="30"/><path d="M382 360Q400 305 418 360Z"/><circle cx="260" cy="444" r="9"/><circle cx="310" cy="444" r="9"/><circle cx="490" cy="444" r="9"/><circle cx="540" cy="444" r="9"/><circle cx="300" cy="414" r="9"/><circle cx="500" cy="414" r="9"/><circle cx="345" cy="384" r="8"/><circle cx="455" cy="384" r="8"/></g><path d="M0 520Q200 500 400 515T800 505V600H0Z" fill="#2a1230"/></svg></div>
@@ -148,7 +167,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
   function load(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.tx)){state=d;state.budget=state.budget||0}}}catch(e){}}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+  function save(){if(sb)return;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
   function shift(n){var p=ym.split("-"),d=new Date(+p[0],+p[1]-1+n,1);ym=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
   function fmtDay(s){var p=s.split("-");return new Date(+p[0],p[1]-1,+p[2]).toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long"})}
   function fmtNum(el){var n=num(el.value);el.value=n?n.toLocaleString("id-ID"):""}
@@ -187,12 +206,12 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
     var a=num($("amt").value);
     if(!a){alert("Isi jumlah lebih dari 0.");$("amt").focus();return}
     var d=$("date").value||today();
-    state.tx.push({id:Date.now()+Math.floor(Math.random()*1000),amt:a,cat:$("cat").value,pay:$("pay").value,date:d,note:$("note").value.trim()});
-    save();ym=d.slice(0,7);$("amt").value="";$("note").value="";render();
+    var row={amt:a,cat:$("cat").value,pay:$("pay").value,date:d,note:$("note").value.trim()};
+    cloudAdd(row).then(function(r){state.tx.push(r);save();ym=d.slice(0,7);$("amt").value="";$("note").value="";render()}).catch(function(e){alert("Gagal menyimpan: "+errMsg(e))});
   });
-  $("list").addEventListener("click",function(e){var id=e.target.dataset.id;if(!id)return;state.tx=state.tx.filter(function(t){return String(t.id)!==id});save();render()});
-  $("setBudget").addEventListener("click",function(){state.budget=num($("budget").value);save();render()});
-  $("reset").addEventListener("click",function(){if(confirm("Hapus semua catatan? Tindakan ini tidak bisa dibatalkan.")){state={tx:[],budget:0};$("budget").value="";save();render()}});
+  $("list").addEventListener("click",function(e){var id=e.target.dataset.id;if(!id)return;cloudDel(id).then(function(){state.tx=state.tx.filter(function(t){return String(t.id)!==id});save();render()}).catch(function(e){alert("Gagal menghapus: "+errMsg(e))})});
+  $("setBudget").addEventListener("click",function(){var n=num($("budget").value);cloudBudget(n).then(function(){state.budget=n;save();render()}).catch(function(e){alert("Gagal menyimpan anggaran: "+errMsg(e))})});
+  $("reset").addEventListener("click",function(){if(confirm("Hapus semua catatan? Tindakan ini tidak bisa dibatalkan.")){cloudReset().then(function(){state.tx=[];if(!sb){state.budget=0;$("budget").value=""}save();render()}).catch(function(e){alert("Gagal menghapus: "+errMsg(e))})}});
 
   $("export").addEventListener("click",async function(){
     if(!state.tx.length){alert("Belum ada catatan untuk diekspor.");return}
@@ -244,6 +263,55 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
   load();ym=today().slice(0,7);setDate(today());
   if(state.budget)$("budget").value=state.budget.toLocaleString("id-ID");
   render();
+
+  /* ---- buku bersama online (Supabase, tanpa login) ---- */
+  var SUPABASE_URL="https://ltpcbufgvekcowjvxtvn.supabase.co/rest/v1/",SUPABASE_KEY="sb_publishable_ihr9grYac-qS5e31Qjvgcw_UzZ8qcPL",sb=null,book=null,BK="kenduit-book";
+  function setMsg(t,ok){var m=$("authMsg");m.textContent=t||"";m.className="msg"+(ok?" ok":"")}
+  function mapRow(r){return {id:r.id,amt:Number(r.amt),cat:r.cat,pay:r.pay,date:r.date,note:r.note||""}}
+  function errMsg(e){return (e&&e.message)||"Terjadi kesalahan."}
+  function chk(r){if(r.error)throw r.error;return r.data}
+  function cloudAdd(row){
+    if(!sb){row.id=Date.now()+Math.floor(Math.random()*1000);return Promise.resolve(row)}
+    return sb.rpc("add_expense",{p_book:book,p_amt:row.amt,p_cat:row.cat,p_pay:row.pay,p_note:row.note,p_date:row.date}).then(chk).then(function(d){return mapRow(Array.isArray(d)?d[0]:d)});
+  }
+  function cloudDel(id){if(!sb)return Promise.resolve();return sb.rpc("delete_expense",{p_book:book,p_id:Number(id)}).then(chk)}
+  function cloudBudget(n){if(!sb)return Promise.resolve();return sb.rpc("set_budget",{p_book:book,p_amt:n}).then(chk)}
+  function cloudReset(){if(!sb)return Promise.resolve();return sb.rpc("delete_all",{p_book:book}).then(chk)}
+  function pull(){
+    return Promise.all([sb.rpc("get_expenses",{p_book:book}).then(chk),sb.rpc("get_budget",{p_book:book}).then(chk)]).then(function(r){
+      state={tx:r[0].map(mapRow),budget:Number(r[1])||0};render();
+    });
+  }
+  function openBook(code){
+    book=code;try{localStorage.setItem(BK,code)}catch(e){}
+    history.replaceState(null,"","#"+code);
+    setMsg("Memuat...",true);
+    pull().then(function(){
+      $("authBox").hidden=true;$("appMain").hidden=false;$("whoBar").hidden=false;
+      $("budget").value=state.budget?state.budget.toLocaleString("id-ID"):"";
+      ym=today().slice(0,7);render();setMsg("");
+    }).catch(function(e){setMsg("Gagal memuat: "+errMsg(e))});
+  }
+  function closeBook(){
+    book=null;try{localStorage.removeItem(BK)}catch(e){}
+    history.replaceState(null,"",location.pathname+location.search);
+    state={tx:[],budget:0};$("appMain").hidden=true;$("authBox").hidden=false;$("codeIn").value="";setMsg("");
+  }
+  function newCode(){var a=new Uint8Array(12);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(x){return ("0"+x.toString(16)).slice(-2)}).join("")}
+  function startBook(){
+    if(SUPABASE_URL.indexOf("http")!==0||!window.supabase)return;
+    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    state={tx:[],budget:0};$("appMain").hidden=true;$("authBox").hidden=false;
+    $("btnNew").addEventListener("click",function(){openBook(newCode())});
+    $("btnOpen").addEventListener("click",function(){var c=$("codeIn").value.trim().replace(/^.*#/,"");if(!/^[a-z0-9]{16,64}$/i.test(c)){setMsg("Kode tidak valid. Tempel link atau kode lengkap.");return}openBook(c)});
+    $("btnCopy").addEventListener("click",function(){var l=location.href,b=$("btnCopy");if(navigator.clipboard)navigator.clipboard.writeText(l).then(function(){b.textContent="Tersalin";setTimeout(function(){b.textContent="Salin link"},1800)},function(){prompt("Salin link ini:",l)});else prompt("Salin link ini:",l)});
+    $("btnOut").addEventListener("click",function(){if(confirm("Tutup buku di perangkat ini? Data tetap ada di server dan bisa dibuka lagi dengan link atau kode."))closeBook()});
+    var h=location.hash.replace("#",""),saved=null;try{saved=localStorage.getItem(BK)}catch(e){}
+    var c=/^[a-z0-9]{16,64}$/i.test(h)?h:saved;
+    if(c)openBook(c);
+    setInterval(function(){if(book&&!document.hidden)pull().catch(function(){})},30000);
+  }
+  startBook();
 })();
 </script>
 </body>
