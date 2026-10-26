@@ -265,7 +265,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
   render();
 
   /* ---- buku bersama online (Supabase, tanpa login) ---- */
-  var SUPABASE_URL="https://ltpcbufgvekcowjvxtvn.supabase.co/rest/v1/",SUPABASE_KEY="sb_publishable_ihr9grYac-qS5e31Qjvgcw_UzZ8qcPL",sb=null,book=null,BK="kenduit-book";
+  var SUPABASE_URL="https://ltpcbufgvekcowjvxtvn.supabase.co",SUPABASE_KEY="sb_publishable_ihr9grYac-qS5e31Qjvgcw_UzZ8qcPL",sb=null,book=null,BK="kenduit-book";
   function setMsg(t,ok){var m=$("authMsg");m.textContent=t||"";m.className="msg"+(ok?" ok":"")}
   function mapRow(r){return {id:r.id,amt:Number(r.amt),cat:r.cat,pay:r.pay,date:r.date,note:r.note||""}}
   function errMsg(e){return (e&&e.message)||"Terjadi kesalahan."}
