@@ -10,8 +10,6 @@
 <style>
 :root{--bg:#FFF3F7;--surface:#fff;--ink:#3A1226;--mute:#85596D;--line:#F5D5E2;--blue:#D6336C;--out:#B42318;--ok:#1E8A5A;--chip:#FCE4EE;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1F0D16;--surface:#2D1422;--ink:#FDEAF2;--mute:#C79BB0;--line:#4A2539;--blue:#E0457F;--out:#FF8A7A;--ok:#4CC38A;--chip:#3D1B2D}}
-:root[data-theme="dark"]{--bg:#1F0D16;--surface:#2D1422;--ink:#FDEAF2;--mute:#C79BB0;--line:#4A2539;--blue:#E0457F;--out:#FF8A7A;--ok:#4CC38A;--chip:#3D1B2D}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
@@ -73,29 +71,46 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
 .msg{font-size:13px;margin:10px 0 0;color:var(--out)}
 .msg.ok{color:var(--ok)}
 .lead{font-size:14px;color:var(--mute);margin:0 0 4px}
+[data-tema="dollar"]{--bg:#E8F3E6;--surface:#FBFFF8;--ink:#0F2E1A;--mute:#4F6B58;--line:#C5DDC3;--blue:#1F7A3E;--out:#B3261E;--ok:#1F7A3E;--chip:#D8EBD5}
+[data-tema="dark"]{--bg:#050706;--surface:#101512;--ink:#E8F1EA;--mute:#8FA596;--line:#1F2A23;--blue:#2F9E8A;--out:#FF8A7A;--ok:#4CC38A;--chip:#18211B}
+[data-tema="dollar"] .bg{background:#1f5a32}
+[data-tema="dollar"] .bg::after{background:linear-gradient(180deg,rgba(4,36,18,.4),rgba(4,36,18,.6))}
+[data-tema="dark"] .bg{background:#020605}
+[data-tema="dark"] .bg::after{background:linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.55))}
+.themes{display:flex;gap:6px;margin-top:12px}
+.themes button{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;font-size:13px;padding:9px 6px;border-radius:10px;cursor:pointer}
+.themes button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 </style>
 </head>
 <body>
 <main id="authBox" hidden>
   <section style="margin-top:40px">
     <h2 style="font-size:22px">Kenduit</h2>
-    <p class="lead">Catatan disimpan online dalam satu "buku" tanpa login. Buat buku baru, lalu bagikan link-nya ke perangkat lain atau orang lain. Siapa pun yang punya link bisa melihat dan mengubah catatan di buku itu.</p>
-    <button class="primary" id="btnNew" type="button">Buat buku baru</button>
-    <label for="codeIn">Sudah punya buku? Tempel link atau kode</label>
-    <input id="codeIn" type="text" autocomplete="off" placeholder="https://...#kode atau kode saja">
-    <button class="ghost" id="btnOpen" type="button" style="width:100%;margin-top:10px">Buka buku</button>
+    <p class="lead">Masuk atau daftar agar catatan pengeluaranmu tersimpan di akunmu dan bisa dibuka dari perangkat mana pun. Catatan tiap akun bersifat pribadi.</p>
+    <label for="em">Email</label>
+    <input id="em" type="email" autocomplete="email" placeholder="nama@email.com">
+    <label for="pw">Kata sandi (minimal 6 karakter)</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <button class="primary" id="btnLogin" type="button">Masuk</button>
+    <button class="ghost" id="btnSignup" type="button" style="width:100%;margin-top:10px">Daftar akun baru</button>
     <p class="msg" id="authMsg" role="status"></p>
   </section>
 </main>
 <main id="appMain">
-  <div class="who" id="whoBar" hidden><span>Buku bersama aktif, sinkron antar perangkat</span><div><button class="ghost" id="btnCopy" type="button">Salin link</button><button class="ghost" id="btnOut" type="button">Tutup</button></div></div>
+  <div class="who" id="whoBar" hidden><span id="who"></span><div><button class="ghost" id="btnOut" type="button">Keluar</button></div></div>
   <div class="hero">
 <div class="bg" id="bg" aria-hidden="true">
-  <div class="slide on" data-name="Candi Borobudur, Jawa Tengah"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b1f5c"/><stop offset=".55" stop-color="#d6336c"/><stop offset="1" stop-color="#ffb36b"/></linearGradient></defs><rect width="800" height="600" fill="url(#a1)"/><circle cx="400" cy="340" r="75" fill="#ffe9a8" opacity=".9"/><path d="M0 430Q200 370 400 410T800 390V600H0Z" fill="#6a2f5a"/><g fill="#3a1d3a"><rect x="190" y="480" width="420" height="30"/><rect x="235" y="450" width="330" height="30"/><rect x="280" y="420" width="240" height="30"/><rect x="325" y="390" width="150" height="30"/><rect x="365" y="360" width="70" height="30"/><path d="M382 360Q400 305 418 360Z"/><circle cx="260" cy="444" r="9"/><circle cx="310" cy="444" r="9"/><circle cx="490" cy="444" r="9"/><circle cx="540" cy="444" r="9"/><circle cx="300" cy="414" r="9"/><circle cx="500" cy="414" r="9"/><circle cx="345" cy="384" r="8"/><circle cx="455" cy="384" r="8"/></g><path d="M0 520Q200 500 400 515T800 505V600H0Z" fill="#2a1230"/></svg></div>
-  <div class="slide" data-name="Tanah Lot, Bali"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a3c8c"/><stop offset=".55" stop-color="#d6336c"/><stop offset="1" stop-color="#ff9a62"/></linearGradient><linearGradient id="b2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0668a"/><stop offset="1" stop-color="#2d1b4e"/></linearGradient></defs><rect width="800" height="380" fill="url(#a2)"/><circle cx="560" cy="350" r="65" fill="#ffd27a"/><rect y="380" width="800" height="220" fill="url(#b2)"/><g fill="#ffd27a" opacity=".7"><rect x="540" y="388" width="40" height="6"/><rect x="528" y="404" width="64" height="6"/><rect x="516" y="420" width="88" height="6"/></g><path d="M0 470Q50 460 100 470T200 470T300 470T400 470T500 470T600 470T700 470T800 470" stroke="#fff" stroke-opacity=".3" stroke-width="3" fill="none"/><path d="M240 570Q290 440 350 450Q410 440 470 570Z" fill="#1e1228"/><g fill="#1e1228"><rect x="345" y="400" width="20" height="55"/><path d="M320 415L355 385L390 415Z"/><path d="M328 395L355 368L382 395Z"/><path d="M338 375L355 352L372 375Z"/></g></svg></div>
-  <div class="slide" data-name="Raja Ampat, Papua"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ec6ff"/><stop offset="1" stop-color="#e6f9ff"/></linearGradient><linearGradient id="b3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fe3d0"/><stop offset="1" stop-color="#0a7f9e"/></linearGradient></defs><rect width="800" height="300" fill="url(#a3)"/><circle cx="650" cy="120" r="40" fill="#fff6c2"/><rect y="300" width="800" height="300" fill="url(#b3)"/><g fill="#9ff3e6" opacity=".45"><ellipse cx="220" cy="440" rx="150" ry="22"/><ellipse cx="560" cy="430" rx="120" ry="18"/><ellipse cx="400" cy="370" rx="70" ry="10"/></g><g fill="#6b7a66"><path d="M170 330Q200 400 190 430L250 430Q240 400 270 330Z"/><path d="M525 355Q545 405 540 420L590 420Q585 400 600 355Z"/><path d="M378 315Q392 345 388 355L418 355Q414 340 424 315Z"/></g><g fill="#fff" opacity=".5"><ellipse cx="220" cy="432" rx="60" ry="8"/><ellipse cx="565" cy="421" rx="40" ry="6"/><ellipse cx="403" cy="356" rx="26" ry="4"/></g><g fill="#1f7a4f"><ellipse cx="220" cy="320" rx="100" ry="45"/><ellipse cx="560" cy="350" rx="70" ry="32"/><ellipse cx="400" cy="310" rx="45" ry="20"/></g><g fill="#2fa36a"><ellipse cx="220" cy="308" rx="76" ry="26"/><ellipse cx="560" cy="340" rx="52" ry="18"/><ellipse cx="400" cy="303" rx="32" ry="11"/></g></svg></div>
-  <div class="slide" data-name="Gunung Bromo, Jawa Timur"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1038"/><stop offset=".6" stop-color="#5b2a7a"/><stop offset="1" stop-color="#ff8a6b"/></linearGradient></defs><rect width="800" height="600" fill="url(#a4)"/><g fill="#fff"><circle cx="90" cy="70" r="1.8"/><circle cx="210" cy="140" r="1.4"/><circle cx="330" cy="60" r="1.8"/><circle cx="470" cy="110" r="1.4"/><circle cx="560" cy="50" r="1.8"/><circle cx="690" cy="130" r="1.6"/><circle cx="760" cy="60" r="1.4"/><circle cx="140" cy="210" r="1.2"/><circle cx="620" cy="200" r="1.2"/></g><path d="M430 460L610 230Q625 215 640 230L790 460Z" fill="#4a2d63"/><path d="M120 480L280 350Q330 335 380 350L540 480Z" fill="#2b1b3d"/><g fill="#cfc3dd"><circle cx="330" cy="335" r="22" opacity=".6"/><circle cx="345" cy="305" r="28" opacity=".5"/><circle cx="372" cy="270" r="34" opacity=".4"/><circle cx="412" cy="235" r="40" opacity=".3"/></g><g fill="#f3d9ee" opacity=".85"><ellipse cx="150" cy="485" rx="200" ry="30"/><ellipse cx="420" cy="490" rx="220" ry="32"/><ellipse cx="680" cy="485" rx="200" ry="30"/><rect y="495" width="800" height="105" fill="#e8c3e0"/></g><path d="M0 565Q150 525 300 555T600 550T800 565V600H0Z" fill="#1a0e26"/></svg></div>
-  <div class="slide" data-name="Gunung Fuji, Jepang"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc2d9"/><stop offset="1" stop-color="#fff3f7"/></linearGradient></defs><rect width="800" height="600" fill="url(#a5)"/><circle cx="200" cy="140" r="45" fill="#ff5a7e"/><path d="M110 480L340 235Q400 205 460 235L690 480Z" fill="#5b7db1"/><path d="M338 238Q400 205 462 238L438 262L418 246L400 266L382 246L362 262Z" fill="#fff"/><rect y="480" width="800" height="120" fill="#8fb0d9"/><ellipse cx="400" cy="520" rx="220" ry="14" fill="#fff" opacity=".35"/><g stroke="#5a2a3a" stroke-width="8" stroke-linecap="round" fill="none"><path d="M800 40Q650 80 560 170"/><path d="M700 90Q690 150 650 190"/></g><g fill="#ff8fb8" opacity=".92"><circle cx="790" cy="60" r="20"/><circle cx="755" cy="80" r="22"/><circle cx="725" cy="70" r="18"/><circle cx="698" cy="98" r="22"/><circle cx="676" cy="132" r="20"/><circle cx="648" cy="120" r="18"/><circle cx="620" cy="150" r="20"/><circle cx="596" cy="172" r="18"/><circle cx="572" cy="192" r="16"/><circle cx="712" cy="132" r="18"/><circle cx="668" cy="178" r="18"/></g><g fill="#ffd1e3"><circle cx="740" cy="104" r="12"/><circle cx="640" cy="152" r="12"/><circle cx="700" cy="60" r="10"/></g></svg></div>
+  <div class="slide" data-theme="holiday" data-name="Candi Borobudur, Jawa Tengah"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b1f5c"/><stop offset=".55" stop-color="#d6336c"/><stop offset="1" stop-color="#ffb36b"/></linearGradient></defs><rect width="800" height="600" fill="url(#a1)"/><circle cx="400" cy="340" r="75" fill="#ffe9a8" opacity=".9"/><path d="M0 430Q200 370 400 410T800 390V600H0Z" fill="#6a2f5a"/><g fill="#3a1d3a"><rect x="190" y="480" width="420" height="30"/><rect x="235" y="450" width="330" height="30"/><rect x="280" y="420" width="240" height="30"/><rect x="325" y="390" width="150" height="30"/><rect x="365" y="360" width="70" height="30"/><path d="M382 360Q400 305 418 360Z"/><circle cx="260" cy="444" r="9"/><circle cx="310" cy="444" r="9"/><circle cx="490" cy="444" r="9"/><circle cx="540" cy="444" r="9"/><circle cx="300" cy="414" r="9"/><circle cx="500" cy="414" r="9"/><circle cx="345" cy="384" r="8"/><circle cx="455" cy="384" r="8"/></g><path d="M0 520Q200 500 400 515T800 505V600H0Z" fill="#2a1230"/></svg></div>
+  <div class="slide" data-theme="holiday" data-name="Tanah Lot, Bali"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a3c8c"/><stop offset=".55" stop-color="#d6336c"/><stop offset="1" stop-color="#ff9a62"/></linearGradient><linearGradient id="b2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0668a"/><stop offset="1" stop-color="#2d1b4e"/></linearGradient></defs><rect width="800" height="380" fill="url(#a2)"/><circle cx="560" cy="350" r="65" fill="#ffd27a"/><rect y="380" width="800" height="220" fill="url(#b2)"/><g fill="#ffd27a" opacity=".7"><rect x="540" y="388" width="40" height="6"/><rect x="528" y="404" width="64" height="6"/><rect x="516" y="420" width="88" height="6"/></g><path d="M0 470Q50 460 100 470T200 470T300 470T400 470T500 470T600 470T700 470T800 470" stroke="#fff" stroke-opacity=".3" stroke-width="3" fill="none"/><path d="M240 570Q290 440 350 450Q410 440 470 570Z" fill="#1e1228"/><g fill="#1e1228"><rect x="345" y="400" width="20" height="55"/><path d="M320 415L355 385L390 415Z"/><path d="M328 395L355 368L382 395Z"/><path d="M338 375L355 352L372 375Z"/></g></svg></div>
+  <div class="slide" data-theme="holiday" data-name="Raja Ampat, Papua"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ec6ff"/><stop offset="1" stop-color="#e6f9ff"/></linearGradient><linearGradient id="b3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fe3d0"/><stop offset="1" stop-color="#0a7f9e"/></linearGradient></defs><rect width="800" height="300" fill="url(#a3)"/><circle cx="650" cy="120" r="40" fill="#fff6c2"/><rect y="300" width="800" height="300" fill="url(#b3)"/><g fill="#9ff3e6" opacity=".45"><ellipse cx="220" cy="440" rx="150" ry="22"/><ellipse cx="560" cy="430" rx="120" ry="18"/><ellipse cx="400" cy="370" rx="70" ry="10"/></g><g fill="#6b7a66"><path d="M170 330Q200 400 190 430L250 430Q240 400 270 330Z"/><path d="M525 355Q545 405 540 420L590 420Q585 400 600 355Z"/><path d="M378 315Q392 345 388 355L418 355Q414 340 424 315Z"/></g><g fill="#fff" opacity=".5"><ellipse cx="220" cy="432" rx="60" ry="8"/><ellipse cx="565" cy="421" rx="40" ry="6"/><ellipse cx="403" cy="356" rx="26" ry="4"/></g><g fill="#1f7a4f"><ellipse cx="220" cy="320" rx="100" ry="45"/><ellipse cx="560" cy="350" rx="70" ry="32"/><ellipse cx="400" cy="310" rx="45" ry="20"/></g><g fill="#2fa36a"><ellipse cx="220" cy="308" rx="76" ry="26"/><ellipse cx="560" cy="340" rx="52" ry="18"/><ellipse cx="400" cy="303" rx="32" ry="11"/></g></svg></div>
+  <div class="slide" data-theme="holiday" data-name="Gunung Bromo, Jawa Timur"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1038"/><stop offset=".6" stop-color="#5b2a7a"/><stop offset="1" stop-color="#ff8a6b"/></linearGradient></defs><rect width="800" height="600" fill="url(#a4)"/><g fill="#fff"><circle cx="90" cy="70" r="1.8"/><circle cx="210" cy="140" r="1.4"/><circle cx="330" cy="60" r="1.8"/><circle cx="470" cy="110" r="1.4"/><circle cx="560" cy="50" r="1.8"/><circle cx="690" cy="130" r="1.6"/><circle cx="760" cy="60" r="1.4"/><circle cx="140" cy="210" r="1.2"/><circle cx="620" cy="200" r="1.2"/></g><path d="M430 460L610 230Q625 215 640 230L790 460Z" fill="#4a2d63"/><path d="M120 480L280 350Q330 335 380 350L540 480Z" fill="#2b1b3d"/><g fill="#cfc3dd"><circle cx="330" cy="335" r="22" opacity=".6"/><circle cx="345" cy="305" r="28" opacity=".5"/><circle cx="372" cy="270" r="34" opacity=".4"/><circle cx="412" cy="235" r="40" opacity=".3"/></g><g fill="#f3d9ee" opacity=".85"><ellipse cx="150" cy="485" rx="200" ry="30"/><ellipse cx="420" cy="490" rx="220" ry="32"/><ellipse cx="680" cy="485" rx="200" ry="30"/><rect y="495" width="800" height="105" fill="#e8c3e0"/></g><path d="M0 565Q150 525 300 555T600 550T800 565V600H0Z" fill="#1a0e26"/></svg></div>
+  <div class="slide" data-theme="holiday" data-name="Gunung Fuji, Jepang"><svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc2d9"/><stop offset="1" stop-color="#fff3f7"/></linearGradient></defs><rect width="800" height="600" fill="url(#a5)"/><circle cx="200" cy="140" r="45" fill="#ff5a7e"/><path d="M110 480L340 235Q400 205 460 235L690 480Z" fill="#5b7db1"/><path d="M338 238Q400 205 462 238L438 262L418 246L400 266L382 246L362 262Z" fill="#fff"/><rect y="480" width="800" height="120" fill="#8fb0d9"/><ellipse cx="400" cy="520" rx="220" ry="14" fill="#fff" opacity=".35"/><g stroke="#5a2a3a" stroke-width="8" stroke-linecap="round" fill="none"><path d="M800 40Q650 80 560 170"/><path d="M700 90Q690 150 650 190"/></g><g fill="#ff8fb8" opacity=".92"><circle cx="790" cy="60" r="20"/><circle cx="755" cy="80" r="22"/><circle cx="725" cy="70" r="18"/><circle cx="698" cy="98" r="22"/><circle cx="676" cy="132" r="20"/><circle cx="648" cy="120" r="18"/><circle cx="620" cy="150" r="20"/><circle cx="596" cy="172" r="18"/><circle cx="572" cy="192" r="16"/><circle cx="712" cy="132" r="18"/><circle cx="668" cy="178" r="18"/></g><g fill="#ffd1e3"><circle cx="740" cy="104" r="12"/><circle cx="640" cy="152" r="12"/><circle cx="700" cy="60" r="10"/></g></svg></div>
+  <div class="slide" data-theme="dollar" data-gen="d1" data-name="Lembaran dolar"></div>
+  <div class="slide" data-theme="dollar" data-gen="d2" data-name="Tumpukan koin"></div>
+  <div class="slide" data-theme="dollar" data-gen="d3" data-name="Hujan dolar"></div>
+  <div class="slide" data-theme="dark" data-gen="f1" data-name="Hutan hitam, malam berbulan"></div>
+  <div class="slide" data-theme="dark" data-gen="f2" data-name="Hutan hitam berkabut"></div>
+  <div class="slide" data-theme="dark" data-gen="f3" data-name="Hutan hitam, kunang-kunang"></div>
 </div>
     <div class="loc" id="loc"></div>
     <div class="brand"><svg viewBox="0 0 36 36" aria-hidden="true" fill="none"><circle cx="18" cy="18" r="16" fill="rgba(255,255,255,.2)" stroke="#fff" stroke-width="2"/><path d="M13 10.5V25.5M24 10.5L13 18L24 25.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28" cy="8" r="3.5" fill="#FFE27A" stroke="#B0206A" stroke-width="1.5"/></svg><span>Kenduit</span></div>
@@ -105,6 +120,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
     <div class="prog" id="prog" hidden><i id="progBar"></i></div>
     <p class="sub" id="sub"></p>
   </div>
+  <div class="themes" id="themes" role="group" aria-label="Tema tampilan"><button data-t="holiday" type="button">🏖️ Holiday</button><button data-t="dollar" type="button">💵 Dollar</button><button data-t="dark" type="button">🌲 Dark</button></div>
 
   <section>
     <h2>Catat pengeluaran</h2>
@@ -239,14 +255,55 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
     }catch(e){alert("Gagal menyimpan file. Coba lagi.")}
   });
 
-  var slides=document.querySelectorAll("#bg .slide"),cur=0;
-  function showSlide(i){
-    slides.forEach(function(s,k){s.classList.toggle("on",k===i)});
-    $("loc").textContent="📍 "+slides[i].dataset.name;
+  var allSlides=document.querySelectorAll("#bg .slide"),cur=0,theme="holiday",ICO={holiday:"📍 ",dollar:"💵 ",dark:"🌲 "};
+  function rnd(x){return function(){x=(x*9301+49297)%233280;return x/233280}}
+  function pine(x,b,h){var w=h*.3,L=[[0,-1],[-.55,-.62],[-.28,-.62],[-.8,-.3],[-.4,-.3],[-1,0]],d="M"+x+" "+(b-h),i;for(i=1;i<6;i++)d+="L"+(x+L[i][0]*w)+" "+(b+L[i][1]*h);for(i=5;i>=1;i--)d+="L"+(x-L[i][0]*w)+" "+(b+L[i][1]*h);return d+"Z"}
+  function forestSVG(v,moon,flies){
+    var r=rnd(v*13),cols=["#0e2421","#0a1a18","#06100f","#020605"],i,l;
+    var g='<defs><linearGradient id="fg'+v+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02050a"/><stop offset="1" stop-color="#0d1f1c"/></linearGradient></defs><rect width="800" height="600" fill="url(#fg'+v+')"/>';
+    if(moon)g+='<circle cx="'+moon+'" cy="130" r="95" fill="#9fc9bd" opacity=".12"/><circle cx="'+moon+'" cy="130" r="46" fill="#e6efe9" opacity=".92"/>';
+    for(l=0;l<4;l++){var d="",n=9+l*3,base=420+l*52;for(i=0;i<n;i++)d+=pine(i*(800/n)+r()*40,base,150+l*45+r()*60);g+='<path d="'+d+'" fill="'+cols[l]+'"/><rect y="'+base+'" width="800" height="'+(600-base)+'" fill="'+cols[l]+'"/><rect y="'+(base-30)+'" width="800" height="60" fill="#bfe3d6" opacity="'+(.04+.03*l)+'"/>'}
+    if(flies)for(i=0;i<22;i++)g+='<circle cx="'+Math.round(r()*800)+'" cy="'+Math.round(300+r()*250)+'" r="'+(1.4+r()*1.4).toFixed(1)+'" fill="#f6e58d" opacity="'+(.5+r()*.5).toFixed(2)+'"/>';
+    return g;
   }
-  showSlide(0);
+  function dollarSVG(v){
+    var r=rnd(v*7),i,g='<defs><linearGradient id="dg'+v+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f5a32"/><stop offset="1" stop-color="#6fb27d"/></linearGradient></defs><rect width="800" height="600" fill="url(#dg'+v+')"/>';
+    var T=function(x,y,sz,op,f){return '<text x="'+x+'" y="'+y+'" font-size="'+sz+'" font-family="Georgia,serif" font-weight="700" fill="'+(f||"#fff")+'" fill-opacity="'+op+'" text-anchor="middle">$</text>'};
+    if(v===1){
+      for(i=0;i<14;i++)g+='<circle cx="400" cy="300" r="'+(40+i*24)+'" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2"/>';
+      g+='<rect x="50" y="100" width="700" height="400" rx="14" fill="none" stroke="#e9f7ec" stroke-opacity=".55" stroke-width="4"/><rect x="70" y="120" width="660" height="360" rx="8" fill="none" stroke="#e9f7ec" stroke-opacity=".3" stroke-width="2"/><ellipse cx="400" cy="300" rx="105" ry="135" fill="#d6ecd9" fill-opacity=".3" stroke="#fff" stroke-opacity=".6" stroke-width="3"/><circle cx="400" cy="262" r="42" fill="#b9dcc0" fill-opacity=".55"/><path d="M310 400Q400 320 490 400V420Q400 435 310 420Z" fill="#b9dcc0" fill-opacity=".55"/>';
+      [[110,190],[690,190],[110,440],[690,440]].forEach(function(p){g+=T(p[0],p[1],64,.55)});
+    }else if(v===2){
+      [[240,380],[560,400],[150,470],[470,480],[310,500],[630,510]].forEach(function(p){var n=5+Math.floor(r()*6),k;for(k=0;k<n;k++)g+='<ellipse cx="'+p[0]+'" cy="'+(p[1]-k*16)+'" rx="62" ry="18" fill="#e2b93b" stroke="#a37f12" stroke-width="2"/>';var ty=p[1]-(n-1)*16;g+='<ellipse cx="'+p[0]+'" cy="'+ty+'" rx="56" ry="15" fill="#f6d86b"/>'+T(p[0],ty+7,20,.8,"#a37f12")});
+    }else{
+      for(i=0;i<26;i++)g+=T(Math.round(r()*800),Math.round(r()*600),Math.round(24+r()*70),(.08+r()*.27).toFixed(2));
+    }
+    return g;
+  }
+  function genSlide(el){
+    var k=el.dataset.gen,v=+k.slice(1),svg=k[0]==="f"?forestSVG(v,[0,560,0,250][v]||0,v!==2):dollarSVG(v);
+    el.innerHTML='<svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">'+svg+'</svg>';
+  }
+  function showSlide(i){
+    var list=Array.prototype.filter.call(allSlides,function(s){return s.dataset.theme===theme});
+    allSlides.forEach(function(s){s.classList.remove("on")});
+    if(!list.length)return;
+    var s=list[i%list.length];
+    if(s.dataset.gen&&!s.firstChild)genSlide(s);
+    s.classList.add("on");
+    $("loc").textContent=ICO[theme]+s.dataset.name;
+  }
+  function setTheme(t){
+    theme=t;document.documentElement.setAttribute("data-tema",t);
+    try{localStorage.setItem("kenduit-theme",t)}catch(e){}
+    document.querySelectorAll("#themes button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t)});
+    cur=0;showSlide(0);
+  }
+  $("themes").addEventListener("click",function(e){var t=e.target.dataset.t;if(t)setTheme(t)});
+  try{var sv=localStorage.getItem("kenduit-theme");if(sv==="dollar"||sv==="dark"||sv==="holiday")theme=sv}catch(e){}
+  setTheme(theme);
   if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){
-    setInterval(function(){cur=(cur+1)%slides.length;showSlide(cur)},7000);
+    setInterval(function(){cur++;showSlide(cur)},7000);
   }
   function offDate(n){var d=new Date();d.setDate(d.getDate()-n);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
   function updateDate(){
@@ -264,54 +321,50 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--blue);outl
   if(state.budget)$("budget").value=state.budget.toLocaleString("id-ID");
   render();
 
-  /* ---- buku bersama online (Supabase, tanpa login) ---- */
-  var SUPABASE_URL="https://ltpcbufgvekcowjvxtvn.supabase.co",SUPABASE_KEY="sb_publishable_ihr9grYac-qS5e31Qjvgcw_UzZ8qcPL",sb=null,book=null,BK="kenduit-book";
+  /* ---- login akun (Supabase) ---- */
+  var SUPABASE_URL="https://ltpcbufgvekcowjvxtvn.supabase.co",SUPABASE_KEY="sb_publishable_ihr9grYac-qS5e31Qjvgcw_UzZ8qcPL",sb=null;
   function setMsg(t,ok){var m=$("authMsg");m.textContent=t||"";m.className="msg"+(ok?" ok":"")}
   function mapRow(r){return {id:r.id,amt:Number(r.amt),cat:r.cat,pay:r.pay,date:r.date,note:r.note||""}}
-  function errMsg(e){return (e&&e.message)||"Terjadi kesalahan."}
+  function errMsg(e){var m=(e&&e.message)||"Terjadi kesalahan.";if(/invalid login/i.test(m))return "Email atau kata sandi salah.";if(/already registered/i.test(m))return "Email sudah terdaftar. Silakan masuk.";if(/not confirmed/i.test(m))return "Email belum dikonfirmasi. Cek kotak masuk emailmu.";return m}
   function chk(r){if(r.error)throw r.error;return r.data}
   function cloudAdd(row){
     if(!sb){row.id=Date.now()+Math.floor(Math.random()*1000);return Promise.resolve(row)}
-    return sb.rpc("add_expense",{p_book:book,p_amt:row.amt,p_cat:row.cat,p_pay:row.pay,p_note:row.note,p_date:row.date}).then(chk).then(function(d){return mapRow(Array.isArray(d)?d[0]:d)});
+    return sb.from("expenses").insert({amt:row.amt,cat:row.cat,pay:row.pay,note:row.note,date:row.date}).select().single().then(chk).then(mapRow);
   }
-  function cloudDel(id){if(!sb)return Promise.resolve();return sb.rpc("delete_expense",{p_book:book,p_id:Number(id)}).then(chk)}
-  function cloudBudget(n){if(!sb)return Promise.resolve();return sb.rpc("set_budget",{p_book:book,p_amt:n}).then(chk)}
-  function cloudReset(){if(!sb)return Promise.resolve();return sb.rpc("delete_all",{p_book:book}).then(chk)}
+  function cloudDel(id){if(!sb)return Promise.resolve();return sb.from("expenses").delete().eq("id",Number(id)).then(chk)}
+  function cloudBudget(n){if(!sb)return Promise.resolve();return sb.auth.updateUser({data:{budget:n}}).then(chk)}
+  function cloudReset(){if(!sb)return Promise.resolve();return sb.from("expenses").delete().gt("id",0).then(chk)}
+  var me=null;
   function pull(){
-    return Promise.all([sb.rpc("get_expenses",{p_book:book}).then(chk),sb.rpc("get_budget",{p_book:book}).then(chk)]).then(function(r){
-      state={tx:r[0].map(mapRow),budget:Number(r[1])||0};render();
+    return sb.from("expenses").select("*").order("date",{ascending:false}).limit(5000).then(chk).then(function(d){
+      state.tx=d.map(mapRow);render();
     });
   }
-  function openBook(code){
-    book=code;try{localStorage.setItem(BK,code)}catch(e){}
-    history.replaceState(null,"","#"+code);
-    setMsg("Memuat...",true);
+  function enter(user){
+    me=user;
+    state={tx:[],budget:Number((user.user_metadata||{}).budget)||0};
     pull().then(function(){
-      $("authBox").hidden=true;$("appMain").hidden=false;$("whoBar").hidden=false;
+      $("who").textContent="Masuk sebagai "+user.email;
       $("budget").value=state.budget?state.budget.toLocaleString("id-ID"):"";
-      ym=today().slice(0,7);render();setMsg("");
-    }).catch(function(e){setMsg("Gagal memuat: "+errMsg(e))});
+      $("authBox").hidden=true;$("appMain").hidden=false;$("whoBar").hidden=false;
+      ym=today().slice(0,7);setMsg("");render();
+    }).catch(function(e){setMsg("Gagal memuat data: "+errMsg(e))});
   }
-  function closeBook(){
-    book=null;try{localStorage.removeItem(BK)}catch(e){}
-    history.replaceState(null,"",location.pathname+location.search);
-    state={tx:[],budget:0};$("appMain").hidden=true;$("authBox").hidden=false;$("codeIn").value="";setMsg("");
-  }
-  function newCode(){var a=new Uint8Array(12);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(x){return ("0"+x.toString(16)).slice(-2)}).join("")}
-  function startBook(){
+  function leave(){me=null;state={tx:[],budget:0};$("appMain").hidden=true;$("authBox").hidden=false;$("pw").value="";setMsg("");render()}
+  function startAuth(){
     if(SUPABASE_URL.indexOf("http")!==0||!window.supabase)return;
     sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
     state={tx:[],budget:0};$("appMain").hidden=true;$("authBox").hidden=false;
-    $("btnNew").addEventListener("click",function(){openBook(newCode())});
-    $("btnOpen").addEventListener("click",function(){var c=$("codeIn").value.trim().replace(/^.*#/,"");if(!/^[a-z0-9]{16,64}$/i.test(c)){setMsg("Kode tidak valid. Tempel link atau kode lengkap.");return}openBook(c)});
-    $("btnCopy").addEventListener("click",function(){var l=location.href,b=$("btnCopy");if(navigator.clipboard)navigator.clipboard.writeText(l).then(function(){b.textContent="Tersalin";setTimeout(function(){b.textContent="Salin link"},1800)},function(){prompt("Salin link ini:",l)});else prompt("Salin link ini:",l)});
-    $("btnOut").addEventListener("click",function(){if(confirm("Tutup buku di perangkat ini? Data tetap ada di server dan bisa dibuka lagi dengan link atau kode."))closeBook()});
-    var h=location.hash.replace("#",""),saved=null;try{saved=localStorage.getItem(BK)}catch(e){}
-    var c=/^[a-z0-9]{16,64}$/i.test(h)?h:saved;
-    if(c)openBook(c);
-    setInterval(function(){if(book&&!document.hidden)pull().catch(function(){})},30000);
+    sb.auth.getSession().then(function(r){if(r.data&&r.data.session)enter(r.data.session.user)});
+    sb.auth.onAuthStateChange(function(ev){if(ev==="SIGNED_OUT"&&me)leave()});
+    function creds(){var e=$("em").value.trim(),p=$("pw").value;if(!e||p.length<6){setMsg("Isi email dan kata sandi (minimal 6 karakter).");return null}return {email:e,password:p}}
+    $("btnLogin").addEventListener("click",function(){var c=creds();if(!c)return;setMsg("Memproses...",true);sb.auth.signInWithPassword(c).then(function(r){if(r.error)return setMsg(errMsg(r.error));enter(r.data.user)})});
+    $("btnSignup").addEventListener("click",function(){var c=creds();if(!c)return;setMsg("Memproses...",true);sb.auth.signUp(c).then(function(r){if(r.error)return setMsg(errMsg(r.error));if(r.data.session)enter(r.data.user);else setMsg("Pendaftaran berhasil. Cek email untuk konfirmasi, lalu masuk.",true)})});
+    $("pw").addEventListener("keydown",function(e){if(e.key==="Enter")$("btnLogin").click()});
+    $("btnOut").addEventListener("click",function(){sb.auth.signOut().then(leave)});
+    setInterval(function(){if(me&&!document.hidden)pull().catch(function(){})},30000);
   }
-  startBook();
+  startAuth();
 })();
 </script>
 </body>
